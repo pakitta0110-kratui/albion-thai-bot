@@ -48,7 +48,7 @@ module.exports = {
     const member =
       await interaction.guild.members.fetch(user.id);
 
-    const guildTag = "[OS]";
+    const guildTag = `[${process.env.GUILD_TAG}]`;
 
     const newName =
       `${guildTag} ${ign} ${nickname}`;
