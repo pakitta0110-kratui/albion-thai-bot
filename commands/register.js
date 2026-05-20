@@ -3,11 +3,14 @@ const {
   PermissionFlagsBits
 } = require("discord.js");
 
+const User =
+  require("../models/User");
+
 module.exports = {
 
   data: new SlashCommandBuilder()
     .setName("register")
-    .setDescription("ลงทะเบียนสมาชิกกิลด์")
+    .setDescription("ลงทะเบียนสมาชิก")
 
     .addUserOption(option =>
       option
@@ -19,7 +22,7 @@ module.exports = {
     .addStringOption(option =>
       option
         .setName("ign")
-        .setDescription("ชื่อตัวละคร Albion")
+        .setDescription("ชื่อในเกม")
         .setRequired(true)
     )
 
@@ -48,7 +51,8 @@ module.exports = {
     const member =
       await interaction.guild.members.fetch(user.id);
 
-    const guildTag = `[${process.env.GUILD_TAG}]`;
+    const guildTag =
+      `[${process.env.GUILD_TAG}]`;
 
     const newName =
       `${guildTag} ${ign} ${nickname}`;
@@ -57,6 +61,25 @@ module.exports = {
 
     await member.roles.add(
       process.env.GUILD_ROLE_ID
+    );
+
+    await User.findOneAndUpdate(
+
+      {
+        discordId: user.id
+      },
+
+      {
+        discordId: user.id,
+        ign,
+        nickname,
+        discordTag: user.username
+      },
+
+      {
+        upsert: true
+      }
+
     );
 
     await interaction.reply(
