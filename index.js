@@ -1,6 +1,6 @@
-const express = require("express");
 require("dotenv").config();
 
+const express = require("express");
 const fs = require("fs");
 
 const {
@@ -29,7 +29,7 @@ for (const file of commandFiles) {
 
 client.once("clientReady", () => {
 
-  console.log(`✅ ออนไลน์ ${client.user.tag}`);
+  console.log(`✅ บอทออนไลน์ ${client.user.tag}`);
 
 });
 
@@ -49,10 +49,21 @@ client.on("interactionCreate", async interaction => {
 
     console.error(error);
 
-    await interaction.reply({
-      content: "❌ มีข้อผิดพลาด",
-      ephemeral: true
-    });
+    if (interaction.replied || interaction.deferred) {
+
+      await interaction.followUp({
+        content: "❌ มีข้อผิดพลาด",
+        ephemeral: true
+      });
+
+    } else {
+
+      await interaction.reply({
+        content: "❌ มีข้อผิดพลาด",
+        ephemeral: true
+      });
+
+    }
 
   }
 
@@ -64,8 +75,10 @@ app.get("/", (req, res) => {
   res.send("Bot online!");
 });
 
-app.listen(3000, () => {
-  console.log("🌐 Web server running");
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`🌐 Web server running on port ${PORT}`);
 });
 
 client.login(process.env.TOKEN);
