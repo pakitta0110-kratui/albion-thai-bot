@@ -1,0 +1,68 @@
+const {
+  SlashCommandBuilder,
+  PermissionFlagsBits
+} = require("discord.js");
+
+module.exports = {
+
+  data: new SlashCommandBuilder()
+    .setName("register")
+    .setDescription("ลงทะเบียนสมาชิกกิลด์")
+
+    .addUserOption(option =>
+      option
+        .setName("user")
+        .setDescription("สมาชิก")
+        .setRequired(true)
+    )
+
+    .addStringOption(option =>
+      option
+        .setName("ign")
+        .setDescription("ชื่อตัวละคร Albion")
+        .setRequired(true)
+    )
+
+    .addStringOption(option =>
+      option
+        .setName("nickname")
+        .setDescription("ชื่อเล่น")
+        .setRequired(true)
+    )
+
+    .setDefaultMemberPermissions(
+      PermissionFlagsBits.ManageRoles
+    ),
+
+  async execute(interaction) {
+
+    const user =
+      interaction.options.getUser("user");
+
+    const ign =
+      interaction.options.getString("ign");
+
+    const nickname =
+      interaction.options.getString("nickname");
+
+    const member =
+      await interaction.guild.members.fetch(user.id);
+
+    const guildTag = "[OS]";
+
+    const newName =
+      `${guildTag} ${ign} ${nickname}`;
+
+    await member.setNickname(newName);
+
+    await member.roles.add(
+      process.env.GUILD_ROLE_ID
+    );
+
+    await interaction.reply(
+      `✅ ลงทะเบียน ${newName} สำเร็จ`
+    );
+
+  }
+
+};
