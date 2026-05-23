@@ -7,7 +7,7 @@ const {
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("small")
-    .setDescription("Create Small Scale CTA"),
+    .setDescription("Create Small Scale"),
 
   async execute(interaction) {
 
