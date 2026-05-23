@@ -1,17 +1,33 @@
-const {
-  SlashCommandBuilder
-} = require("discord.js");
+const { SlashCommandBuilder } = require("discord.js");
 
 module.exports = {
-
   data: new SlashCommandBuilder()
     .setName("ping")
-    .setDescription("เช็คว่าบอทออนไลน์ไหม"),
+    .setDescription("🏓 Check bot latency"),
 
   async execute(interaction) {
 
-    await interaction.reply("🏓 pong!");
+    try {
+      const sent = await interaction.reply({
+        content: "🏓 Pong!",
+        fetchReply: true
+      });
 
+      const latency = sent.createdTimestamp - interaction.createdTimestamp;
+
+      await interaction.editReply(
+        `🏓 Pong!\n⚡ Latency: ${latency}ms`
+      );
+
+    } catch (err) {
+      console.error("Ping Error:", err);
+
+      if (!interaction.replied) {
+        await interaction.reply({
+          content: "❌ Ping error",
+          ephemeral: true
+        });
+      }
+    }
   }
-
 };
