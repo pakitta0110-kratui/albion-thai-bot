@@ -2,14 +2,14 @@ const axios = require("axios");
 
 /* ================= CONFIG ================= */
 
-const CHECK_INTERVAL = 5 * 60 * 1000; // 5 นาที
-const API_TIMEOUT = 10000; // 10 วิ
-const RETRY_DELAY = 3000; // 3 วิ
+const CHECK_INTERVAL = 1 * 60 * 1000; // 🔥 เช็คทุก 1 นาที
+const API_TIMEOUT = 10000;
+const RETRY_DELAY = 3000;
 
 let previousMembers = new Set();
 let firstLoad = true;
 
-/* ================= SAFE API FETCH ================= */
+/* ================= SAFE FETCH ================= */
 
 async function fetchGuildMembers(retry = true) {
 
@@ -31,7 +31,7 @@ async function fetchGuildMembers(retry = true) {
 
     console.log("⚠️ Albion API timeout / error");
 
-    /* ---------- RETRY 1 รอบ ---------- */
+    /* ---------- RETRY ---------- */
 
     if (retry) {
 
@@ -53,7 +53,7 @@ async function fetchGuildMembers(retry = true) {
 
 }
 
-/* ================= TIME FORMAT ================= */
+/* ================= TIME ================= */
 
 function getTimeData() {
 
@@ -79,7 +79,7 @@ function getTimeData() {
 
 }
 
-/* ================= MONITOR SYSTEM ================= */
+/* ================= MONITOR ================= */
 
 function startGuildMonitor(client) {
 
@@ -89,12 +89,16 @@ function startGuildMonitor(client) {
 
     try {
 
-      /* ---------- FETCH MEMBERS ---------- */
+      /* ---------- FETCH ---------- */
 
       const members =
         await fetchGuildMembers();
 
       if (!members) return;
+
+      console.log(
+        `👥 Current members: ${members.length}`
+      );
 
       /* ---------- CHANNEL ---------- */
 
@@ -105,13 +109,15 @@ function startGuildMonitor(client) {
 
       if (!channel) {
 
-        console.log("❌ LOG_CHANNEL_ID not found");
+        console.log(
+          "❌ LOG_CHANNEL_ID not found"
+        );
 
         return;
 
       }
 
-      /* ---------- CURRENT MEMBER SET ---------- */
+      /* ---------- CURRENT SET ---------- */
 
       const currentSet =
         new Set(
@@ -142,11 +148,18 @@ function startGuildMonitor(client) {
         thTime
       } = getTimeData();
 
+      console.log("🔍 Checking joins...");
+      console.log("🔍 Checking leaves...");
+
       /* ================= JOIN ================= */
 
       for (const member of members) {
 
         if (!previousMembers.has(member.Name)) {
+
+          console.log(
+            `🟢 JOIN DETECTED: ${member.Name}`
+          );
 
           await channel.send(
 
@@ -160,10 +173,6 @@ function startGuildMonitor(client) {
 
           );
 
-          console.log(
-            `🟢 JOIN: ${member.Name}`
-          );
-
         }
 
       }
@@ -173,6 +182,10 @@ function startGuildMonitor(client) {
       for (const oldMember of previousMembers) {
 
         if (!currentSet.has(oldMember)) {
+
+          console.log(
+            `🔴 LEAVE DETECTED: ${oldMember}`
+          );
 
           await channel.send(
 
@@ -186,10 +199,6 @@ function startGuildMonitor(client) {
 
           );
 
-          console.log(
-            `🔴 LEFT: ${oldMember}`
-          );
-
         }
 
       }
@@ -197,6 +206,8 @@ function startGuildMonitor(client) {
       /* ---------- SAVE ---------- */
 
       previousMembers = currentSet;
+
+      console.log("✅ Monitor cycle completed");
 
     } catch (error) {
 
