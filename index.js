@@ -227,8 +227,12 @@ const roleTags =
 roles.map(r => roleMap[r])
 .join(" ");
 
+const isSmall =
+interaction.customId ===
+"small_modal";
+
 const content =
-`# FULL MASS (${getTodayDate()})
+`${isSmall ? "# Small Scale" : "# FULL MASS"} (${getTodayDate()})
 
 Info : ${info}
 Set : ${set}
@@ -462,6 +466,8 @@ if (!command) return;
 await command.execute(
 interaction
 );
+
+return;
 
 }
 catch(err){

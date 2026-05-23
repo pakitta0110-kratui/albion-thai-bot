@@ -5,17 +5,25 @@ const {
 } = require("discord.js");
 
 module.exports = {
+
   data: new SlashCommandBuilder()
     .setName("cta")
     .setDescription("Create CTA"),
 
   async execute(interaction) {
 
-    const select = new StringSelectMenuBuilder()
+    const select =
+      new StringSelectMenuBuilder()
+
       .setCustomId("cta_role_select")
-      .setPlaceholder("เลือก Role Tag")
+
+      .setPlaceholder(
+        "เลือก Role Tag"
+      )
+
       .setMinValues(1)
       .setMaxValues(3)
+
       .addOptions([
         {
           label: "One Shot",
@@ -36,12 +44,19 @@ module.exports = {
 
     const row =
       new ActionRowBuilder()
-        .addComponents(select);
+      .addComponents(select);
 
-    await interaction.reply({
-      content: "📢 เลือก Role ที่ต้องการ Tag",
+    return interaction.reply({
+
+      content:
+        "📢 เลือก Role ที่ต้องการ Tag",
+
       components: [row],
-      ephemeral: true
+
+      flags: 64
+
     });
+
   }
+
 };

@@ -38,7 +38,7 @@ module.exports = {
       new ActionRowBuilder()
         .addComponents(select);
 
-    await interaction.reply({
+    return interaction.reply({
       content: "📢 เลือก Role ที่ต้องการ Tag",
       components: [row],
       flags: 64
