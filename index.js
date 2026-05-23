@@ -198,7 +198,7 @@ interaction.customId ===
 interaction.customId ===
 "small_modal"
 )
-)
+) {
 
 const info =
 interaction.fields.getTextInputValue("info");
@@ -274,7 +274,16 @@ content,
 components:[buttons]
 });
 
+if (isSmall) {
+
+global.lastSmallMessage = msg;
+
+}
+else {
+
 global.lastCTAMessage = msg;
+
+}
 
 client.ctaParticipants.set(
 msg.id,
