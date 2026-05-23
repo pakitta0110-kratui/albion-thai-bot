@@ -110,8 +110,13 @@ try {
 
 if (
 interaction.isStringSelectMenu() &&
+(
 interaction.customId ===
 "cta_role_select"
+||
+interaction.customId ===
+"small_role_select"
+)
 ) {
 
 const roles =
@@ -126,7 +131,16 @@ interaction.user.id
 
 const modal =
 new ModalBuilder()
-.setCustomId("cta_modal")
+.setCustomId(
+
+interaction.customId ===
+"small_role_select"
+
+? "small_modal"
+
+: "cta_modal"
+
+)
 .setTitle("📢 CTA FORM");
 
 const fields = [
@@ -177,9 +191,14 @@ return;
 
 if (
 interaction.isModalSubmit() &&
+(
 interaction.customId ===
 "cta_modal"
-) {
+||
+interaction.customId ===
+"small_modal"
+)
+)
 
 const info =
 interaction.fields.getTextInputValue("info");
@@ -269,18 +288,72 @@ await client.channels.fetch(
 process.env.REMINDER_CHANNEL_ID
 );
 
+/* ---------- CTA TIME SYSTEM ---------- */
+
+function getDelay(targetHour, targetMinute) {
+
+const now = new Date();
+
+const target = new Date();
+
+target.setHours(
+targetHour,
+targetMinute,
+0,
+0
+);
+
+if (target < now) {
+target.setDate(
+target.getDate() + 1
+);
+}
+
+return target - now;
+
+}
+
+/* ---------- PARSE MASSUP ---------- */
+
+const fixedMassup =
+massup.replace(".", ":");
+
+const [massHour, massMinute] =
+fixedMassup.split(":").map(Number);
+
+/* ---------- 30 MIN REMINDER ---------- */
+
+const reminder30 =
+getDelay(
+massHour,
+massMinute
+) - (1000 * 60 * 30);
+
+if (reminder30 > 0) {
+
 setTimeout(() => {
 
 reminderChannel.send(
 `🚨 CTA Reminder
 
-FULL MASS starts in 1 hour
+FULL MASS starts in 30 minutes
 
 ${roleTags}`
 );
 
-},
-1000 * 60 * 60);
+}, reminder30);
+
+}
+
+/* ---------- MASS UP NOW ---------- */
+
+const massNow =
+getDelay(
+massHour,
+massMinute
+);
+
+if (massNow > 0) {
 
 setTimeout(() => {
 
@@ -290,15 +363,17 @@ reminderChannel.send(
 ${roleTags}`
 );
 
-},
-1000 * 60 * 10);
+}, massNow);
+
+}
 
 await interaction.reply({
 content:"✅ CTA Created",
-ephemeral:true
+flags:64
 });
 
 return;
+
 }
 
 /* ---------- BUTTON ---------- */
@@ -406,7 +481,8 @@ flags:64
 
 }
 
-} catch(e){
+}
+catch(e){
 
 console.log(
 "⚠️ Cannot reply interaction"
@@ -415,6 +491,8 @@ console.log(
 }
 
 }
+
+});
 
 /* ---------------- READY ---------------- */
 
