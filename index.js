@@ -384,24 +384,37 @@ catch(err){
 
 console.error(err);
 
+try {
+
 if (
 interaction.deferred ||
 interaction.replied
 ){
+
 await interaction.followUp({
 content:"❌ Error",
-flags: 64
+flags:64
 });
+
 }
 else{
+
 await interaction.reply({
 content:"❌ Error",
-flags: 64
+flags:64
 });
+
+}
+
+} catch(e){
+
+console.log(
+"⚠️ Cannot reply interaction"
+);
+
 }
 
 }
-});
 
 /* ---------------- READY ---------------- */
 
