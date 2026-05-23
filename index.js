@@ -255,6 +255,8 @@ content,
 components:[buttons]
 });
 
+global.lastCTAMessage = msg;
+
 client.ctaParticipants.set(
 msg.id,
 []
